@@ -1,0 +1,39 @@
+{
+    "title": "Climate Wrapper",
+    "config": {
+        "step": {
+            "user": {
+                "title": "Configure your Climate Wrapper",
+                "description": "Please enter the friendly name, the entity ID of the climate device and the temperature sensor, and set the temperature variance.",
+                "data": {
+                    "friendly_name": "Friendly Name",
+                    "wrapped_climate": "Climate Entity ID",
+                    "temperature_sensor": "Temperature Sensor Entity ID",
+                    "temperature_variance": "Temperature Variance (°C)"
+                }
+            }
+        },
+        "error": {
+            "invalid_entity": "Invalid entity ID",
+            "unknown": "Unexpected error occurred"
+        },
+        "abort": {
+            "already_configured": "Device is already configured"
+        }
+    },
+    "options": {
+        "title": "Climate Wrapper Options",
+        "step": {
+            "init": {
+                "title": "Update your settings",
+                "description": "Change the settings for the climate device and temperature sensor.",
+                "data": {
+                    "friendly_name": "Friendly Name",
+                    "wrapped_climate": "Climate Entity ID",
+                    "temperature_sensor": "Temperature Sensor Entity ID",
+                    "temperature_variance": "Temperature Variance (°C)"
+                }
+            }
+        }
+    }
+}

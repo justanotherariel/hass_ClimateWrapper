@@ -1,0 +1,10 @@
+# https://www.home-assistant.io/integrations/default_config/
+default_config:
+
+demo:
+
+# https://www.home-assistant.io/integrations/logger/
+logger:
+  default: info
+  logs:
+    custom_components.climate_wrapper: debug
