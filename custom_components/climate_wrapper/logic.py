@@ -43,6 +43,7 @@ class Logic:
 
         # Internal States
         self._last_context = None
+        self._last_target_temperature = None
         self._safety_check_timeout = 0
         self._offset = 1  # In °C
 
@@ -87,11 +88,15 @@ class Logic:
             return
 
         # Target Temperature Changed
-        new_target_temp = new_state.attributes.get(ATTR_TEMPERATURE)
-        if (
-            new_target_temp != self._state.target_temperature
-            and event.context != self._last_context
+        new_target_temp = float(new_state.attributes.get(ATTR_TEMPERATURE))
+        if new_target_temp != self._last_target_temperature and not (
+            self._last_context is None
+            or event.context.id == self._last_context.id
+            or event.context.parent_id == self._last_context.id
         ):
+            _LOGGER.debug(
+                f"Received: {new_target_temp}, Saved: {self._last_target_temperature}"
+            )
             async_create_notification(
                 self._hass,
                 title="Climate Wrapper | External Temperature Change",
@@ -195,6 +200,9 @@ class Logic:
             abs_tol=TEMPERATURE_DIFF_TOLERANCE,
         ):
             self._last_context = Context()
+            self._last_target_temperature = (
+                self._wrapped_climate.temperature + expected_diff
+            )
 
             # Update Wrapped Climate to reflect status
             await self._hass.services.async_call(
@@ -202,7 +210,7 @@ class Logic:
                 "set_temperature",
                 {
                     "entity_id": self._wrapped_climate_id,
-                    "temperature": self._wrapped_climate.temperature + expected_diff,
+                    "temperature": self._last_target_temperature,
                 },
                 context=self._last_context,
             )
