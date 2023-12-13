@@ -176,10 +176,10 @@ class Logic:
 
     async def update(self):
         if self._state.hvac_mode == HVACMode.OFF:
-            self.hvac_action = HVACAction.IDLE
+            self._state.hvac_action = HVACAction.IDLE
 
         elif self._state.hvac_mode == HVACMode.HEAT:
-            self.hvac_action = HVACAction.HEATING
+            self._state.hvac_action = HVACAction.HEATING
 
         elif self._state.hvac_mode == HVACMode.AUTO:
             await self._update_action_via_auto()
