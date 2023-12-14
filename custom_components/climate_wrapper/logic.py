@@ -137,13 +137,8 @@ class Logic:
                     notification_id="climate_wrapper.safety_check_action",
                 )
 
-        # Check TargetTemperature-Temperature Difference
-        expected_diff = TEMPERATURE_DIFF * (1 if self._state.heating else -1)
-        if not math.isclose(
-            expected_diff,
-            self._wrapped_climate.difference,
-            abs_tol=TEMPERATURE_DIFF_TOLERANCE,
-        ):
+        expected_temp, min_temp, max_temp = self.calculate_target_temp()
+        if not (min_temp <= self._wrapped_climate.target_temperature <= max_temp):
             error = True
             if self._safety_check_timeout >= SAFETY_CHECK_TIMEOUT:
                 async_create_notification(
@@ -153,7 +148,7 @@ class Logic:
                         Safety check failed: Temperature Difference mismatch.
                         -> Current Temperature: {self._wrapped_climate.temperature}
                         -> Target Temperature: {self._wrapped_climate.target_temperature}
-                        -> Should be: {self._wrapped_climate.temperature + expected_diff}
+                        -> Should be: {expected_temp}
                         Please check manually.""",
                     notification_id="climate_wrapper.safety_check_difference",
                 )
@@ -193,16 +188,10 @@ class Logic:
 
     async def _set_wrapped_climate(self):
         # Check if update is necessary
-        expected_diff = TEMPERATURE_DIFF * (1 if self._state.heating else -1)
-        if not math.isclose(
-            expected_diff,
-            self._wrapped_climate.difference,
-            abs_tol=TEMPERATURE_DIFF_TOLERANCE,
-        ):
+        expected_temp, min_temp, max_temp = self.calculate_target_temp()
+        if not (min_temp <= self._wrapped_climate.target_temperature <= max_temp):
             self._last_context = Context()
-            self._last_target_temperature = (
-                self._wrapped_climate.temperature + expected_diff
-            )
+            self._last_target_temperature = expected_temp
 
             # Update Wrapped Climate to reflect status
             await self._hass.services.async_call(
@@ -233,3 +222,11 @@ class Logic:
             )
             if self._state.temperature < min_temp:
                 self._state.hvac_action = HVACAction.HEATING
+
+    def calculate_target_temp(self) -> (float, float, float):
+        if self._state.heating:
+            target = self._wrapped_climate.temperature + TEMPERATURE_DIFF
+            return (target, target, 30.0)
+        else:
+            target = self._wrapped_climate.temperature - TEMPERATURE_DIFF
+            return (target, 0, target)
