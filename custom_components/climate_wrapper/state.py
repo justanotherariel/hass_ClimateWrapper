@@ -8,6 +8,8 @@ from enum import StrEnum
 
 @dataclass
 class IntegrationState:
+    enable: bool
+
     hvac_action: HVACAction
     hvac_mode: HVACMode
     temperature: float

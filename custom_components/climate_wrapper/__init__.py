@@ -23,7 +23,7 @@ from homeassistant.components.climate.const import HVACAction, HVACMode
 
 
 _LOGGER = logging.getLogger(__name__)
-PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.CLIMATE]
+PLATFORMS: list[Platform] = [Platform.CLIMATE, Platform.SENSOR, Platform.SWITCH]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -39,6 +39,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             "temperature_variance": entry.data[CONF_TEMPERATURE_VARIANCE],
         },
         "state": IntegrationState(
+            enable=True,
             hvac_action=HVACAction.IDLE,
             hvac_mode=HVACMode.AUTO,
             temperature=None,
@@ -47,6 +48,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "logic": None,
         "climate": None,
         "sensor": None,
+        "switch": None,
         "callbacks": [],
     }
 

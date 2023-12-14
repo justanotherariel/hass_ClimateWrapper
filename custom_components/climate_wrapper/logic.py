@@ -122,6 +122,9 @@ class Logic:
         """Evaluate the current state and check if everything is functioning correctly."""
         error = False
 
+        if not self._state.enable:
+            return
+
         # Check HVACAction
         if self._state.hvac_action != self._wrapped_climate.hvac_action:
             if self._safety_check_timeout >= SAFETY_CHECK_TIMEOUT:
@@ -189,7 +192,13 @@ class Logic:
     async def _set_wrapped_climate(self):
         # Check if update is necessary
         expected_temp, min_temp, max_temp = self.calculate_target_temp()
-        if not (min_temp <= self._wrapped_climate.target_temperature <= max_temp):
+        if self._state.enable and not (
+            min_temp <= self._wrapped_climate.target_temperature <= max_temp
+        ):
+            _LOGGER.debug(
+                f"Temp: {self._wrapped_climate.target_temperature}, Min: {min_temp}, Max: {max_temp}"
+            )
+
             self._last_context = Context()
             self._last_target_temperature = expected_temp
 
