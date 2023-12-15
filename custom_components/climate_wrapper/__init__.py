@@ -86,18 +86,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    # Retrieve the list of callbacks
-    callback_list = hass.data[DOMAIN][entry.entry_id].get("callbacks", [])
+    unload_ok = all(
+        await asyncio.gather(
+            *[
+                hass.config_entries.async_forward_entry_unload(entry, component)
+                for component in PLATFORMS
+            ]
+        )
+    )
 
-    # Loop over the callback list and cancel each
+    # Retrieve and cancel the list of callbacks
+    callback_list = hass.data[DOMAIN][entry.entry_id].get("callbacks", [])
     for cancel_callback in callback_list:
         if callable(cancel_callback):
             cancel_callback()
 
     # Clean up the data
-    hass.data[DOMAIN].pop(entry.entry_id)
+    if unload_ok:
+        hass.data[DOMAIN].pop(entry.entry_id)
 
-    return True
+    return unload_ok
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:

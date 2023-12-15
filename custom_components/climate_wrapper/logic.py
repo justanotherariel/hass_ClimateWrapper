@@ -112,6 +112,8 @@ class Logic:
         if new_state is None:
             return
 
+        _LOGGER.debug(f"Receiving new current Temperature: {float(new_state.state)}")
+
         # Set current temperature
         if new_state.state is not None:
             self._state.temperature = float(new_state.state)
