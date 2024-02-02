@@ -109,7 +109,7 @@ class Logic:
     async def _temperature_sensor_state_change(self, event: Event):
         """Handle state changes of the temperature sensor."""
         new_state = event.data.get("new_state")
-        if new_state is None:
+        if new_state is None or new_state.isnumeric():
             return
 
         _LOGGER.debug(f"Receiving new current Temperature: {float(new_state.state)}")
