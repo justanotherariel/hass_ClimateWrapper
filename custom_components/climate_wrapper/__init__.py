@@ -59,18 +59,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     async def entity_available(entity_id: str) -> bool:
         """Wait until an entity is available."""
 
-        MAX_TIMEOUT = 60
+        MAX_TIMEOUT = 360
         timeout = 0
         while not hass.states.get(entity_id):
             timeout += 1
             if timeout >= MAX_TIMEOUT:
+                _LOGGER.error(f"Entity {entity_id} not available. Setup failed.")
                 return False
             await asyncio.sleep(0.5)
         return True
 
-    await asyncio.gather(
+    # Check if all entities are available
+    result = await asyncio.gather(
         entity_available(wrapped_climate_id), entity_available(temperature_sensor_id)
     )
+    if not all(result):
+        return False
 
     # Init Logic
     hass.data[DOMAIN][entry.entry_id]["logic"] = Logic(hass, entry)
