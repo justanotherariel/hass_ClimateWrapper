@@ -5,7 +5,7 @@ LOGGER: Logger = getLogger(__package__)
 
 NAME = "Climate Wrapper"
 DOMAIN = "climate_wrapper"
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 SAFETY_CHECK_TIMEOUT = 10
 TEMPERATURE_DIFF = 1.0
