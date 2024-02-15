@@ -52,11 +52,11 @@ class ClimateState:
 
     @property
     def temperature(self):
-        return float(self.state.attributes.get(ATTR_CURRENT_TEMPERATURE))
+        return float(self.state.attributes.get(ATTR_CURRENT_TEMPERATURE, 5))
 
     @property
     def target_temperature(self):
-        return float(self.state.attributes.get(ATTR_TEMPERATURE))
+        return float(self.state.attributes.get(ATTR_TEMPERATURE, 0))
 
     @property
     def difference(self):
