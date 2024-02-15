@@ -1,5 +1,10 @@
 from dataclasses import dataclass
-from homeassistant.components.climate.const import HVACMode, HVACAction
+from homeassistant.components.climate.const import (
+    HVACMode,
+    HVACAction,
+    ATTR_HVAC_ACTION,
+    ATTR_CURRENT_TEMPERATURE,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.const import ATTR_TEMPERATURE
 
@@ -10,8 +15,8 @@ from enum import StrEnum
 class IntegrationState:
     enable: bool
 
-    hvac_action: HVACAction
     hvac_mode: HVACMode
+    hvac_action: HVACAction
     temperature: float
     target_temperature: float
 
@@ -24,6 +29,7 @@ class ClimateState:
     _hass: HomeAssistant
 
     entity_id: str
+    hvac_mode: HVACMode
     hvac_action: HVACAction
     temperature: float
     target_temperature: float
@@ -37,12 +43,16 @@ class ClimateState:
         return self._hass.states.get(self.entity_id)
 
     @property
-    def hvac_action(self):
+    def hvac_mode(self):
         return self.state.state
 
     @property
+    def hvac_action(self):
+        return self.state.attributes.get(ATTR_HVAC_ACTION)
+
+    @property
     def temperature(self):
-        return float(self.state.attributes.get("current_temperature"))
+        return float(self.state.attributes.get(ATTR_CURRENT_TEMPERATURE))
 
     @property
     def target_temperature(self):
